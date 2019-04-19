@@ -9,14 +9,12 @@ import android.util.Log
 import android.widget.Button
 import android.widget.Toast
 import com.github.mikephil.charting.charts.LineChart
-import com.github.mikephil.charting.components.Legend
-import com.github.mikephil.charting.components.LimitLine
-import com.github.mikephil.charting.components.XAxis
-import com.github.mikephil.charting.components.YAxis
+import com.github.mikephil.charting.components.*
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IFillFormatter
+import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.interfaces.dataprovider.LineDataProvider
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
@@ -58,14 +56,14 @@ class MainActivity : AppCompatActivity(), OnChartValueSelectedListener {
     }
 
     override fun onNothingSelected() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     override fun onValueSelected(e: Entry?, h: Highlight?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    fun getHistoric() {
+    private fun getHistoric() {
         getRates("2018-02-02", "2018-03-03", "EUR", "USD", this, object : Callback<ResponseBody> {
             override fun onFailure(call: Call<ResponseBody>?, t: Throwable?) {
                 //
@@ -174,10 +172,14 @@ class MainActivity : AppCompatActivity(), OnChartValueSelectedListener {
 
         val set1 : LineDataSet
         val values = ArrayList<Entry>()
+        val dates = ArrayList<String>()
+
         //set entry list
         for(i in rateList.indices){
             values.add(Entry(i.toFloat(),rateList[i].rate.toFloat()))
+            dates.add(rateList[i].date)
         }
+
 
         if (chart.data != null && chart.data.dataSetCount > 0) {
             set1 = chart.data.getDataSetByIndex(0) as LineDataSet
@@ -232,6 +234,7 @@ class MainActivity : AppCompatActivity(), OnChartValueSelectedListener {
 
             // set data
             chart.data = data
+            chart.xAxis.valueFormatter = IndexAxisValueFormatter(dates)
         }
 
     }
