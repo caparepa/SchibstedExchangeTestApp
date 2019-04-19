@@ -15,6 +15,7 @@ interface Endpoint {
     fun getHistoricRates(
         @Query("start_at") startDate: String,
         @Query("end_at") endDate: String,
-        @Query("currency") currency: String
+        @Query("base") base: String,
+        @Query("symbols") symbols: String
     ): Call<ResponseBody>
 }
