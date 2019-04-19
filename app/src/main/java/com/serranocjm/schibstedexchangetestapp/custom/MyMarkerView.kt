@@ -32,13 +32,11 @@ class MyMarkerView(context: Context, layoutResource: Int) : MarkerView(context, 
     override fun refreshContent(e: Entry?, highlight: Highlight?) {
 
         if (e is CandleEntry) {
-
             val ce = e as CandleEntry?
-
-            tvContent.text = Utils.formatNumber(ce!!.high, 0, true)
+            tvContent.text = ce!!.high.toString()
         } else {
-
-            tvContent.text = Utils.formatNumber(e!!.y, 0, true)
+            val value = "USD " + e!!.y
+            tvContent.text = value
         }
 
         super.refreshContent(e, highlight)

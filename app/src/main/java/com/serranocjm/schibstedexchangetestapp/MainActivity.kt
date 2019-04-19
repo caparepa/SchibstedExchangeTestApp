@@ -16,10 +16,8 @@ import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IFillFormatter
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.highlight.Highlight
-import com.github.mikephil.charting.interfaces.dataprovider.LineDataProvider
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
-import com.github.mikephil.charting.utils.Utils
 import com.serranocjm.schibstedexchangetestapp.custom.MyMarkerView
 import com.serranocjm.schibstedexchangetestapp.model.ExchangeRate
 import com.serranocjm.schibstedexchangetestapp.model.HistoryExchangeRate
@@ -233,8 +231,9 @@ class MainActivity : AppCompatActivity(), OnChartValueSelectedListener {
             val data = LineData(dataSets)
 
             // set data
-            chart.data = data
             chart.xAxis.valueFormatter = IndexAxisValueFormatter(dates)
+
+            chart.data = data
         }
 
     }
