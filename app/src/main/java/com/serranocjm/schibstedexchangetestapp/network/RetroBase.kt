@@ -1,4 +1,4 @@
-package com.serranocjm.schibstedexchangetestapp
+package com.serranocjm.schibstedexchangetestapp.network
 
 import retrofit2.Retrofit
 import retrofit2.converter.scalars.ScalarsConverterFactory

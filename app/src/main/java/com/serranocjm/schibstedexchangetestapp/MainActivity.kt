@@ -3,6 +3,7 @@ package com.serranocjm.schibstedexchangetestapp
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import com.serranocjm.schibstedexchangetestapp.network.HistoricRatesHandler
 import kotlinx.android.synthetic.main.activity_main.*
 import okhttp3.ResponseBody
 import retrofit2.Call

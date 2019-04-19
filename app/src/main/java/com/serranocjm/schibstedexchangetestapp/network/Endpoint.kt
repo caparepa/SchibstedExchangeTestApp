@@ -1,4 +1,4 @@
-package com.serranocjm.schibstedexchangetestapp
+package com.serranocjm.schibstedexchangetestapp.network
 
 import okhttp3.ResponseBody
 import retrofit2.Call

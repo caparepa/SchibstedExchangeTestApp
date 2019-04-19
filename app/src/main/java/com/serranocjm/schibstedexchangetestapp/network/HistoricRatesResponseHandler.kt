@@ -1,4 +1,4 @@
-package com.serranocjm.schibstedexchangetestapp
+package com.serranocjm.schibstedexchangetestapp.network
 
 import android.content.Context
 import com.google.gson.Gson
