@@ -1,6 +1,7 @@
 package com.serranocjm.schibstedexchangetestapp.extensions
 
 import android.text.InputType
+import android.widget.DatePicker
 import android.widget.EditText
 import com.serranocjm.schibstedexchangetestapp.model.ExchangeRate
 import com.serranocjm.schibstedexchangetestapp.model.HistoryExchangeRate
@@ -50,4 +51,9 @@ fun EditText.setReadOnly(value: Boolean, inputType: Int = InputType.TYPE_NULL) {
     isFocusable = !value
     isFocusableInTouchMode = !value
     this.inputType = inputType
+}
+
+fun DatePicker.setMaxMinDate(minDate : Long, maxDate: Long){
+    this.minDate= minDate
+    this.maxDate = maxDate
 }

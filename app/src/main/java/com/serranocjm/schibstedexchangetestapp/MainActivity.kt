@@ -23,7 +23,7 @@ import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.serranocjm.schibstedexchangetestapp.custom.MyMarkerView
-import com.serranocjm.schibstedexchangetestapp.extensions.setReadOnly
+import com.serranocjm.schibstedexchangetestapp.extensions.*
 import com.serranocjm.schibstedexchangetestapp.model.ExchangeRate
 import com.serranocjm.schibstedexchangetestapp.model.HistoryExchangeRate
 import com.serranocjm.schibstedexchangetestapp.network.HistoricRatesHandler.getRates
@@ -37,8 +37,6 @@ import java.util.ArrayList
 
 class MainActivity : AppCompatActivity(), OnChartValueSelectedListener {
 
-
-
     lateinit var ctx: Context
     lateinit var queryButton : Button
     lateinit var chart: LineChart
@@ -48,8 +46,8 @@ class MainActivity : AppCompatActivity(), OnChartValueSelectedListener {
     lateinit var startCalendar : DatePickerDialog
     lateinit var endCalendar : DatePickerDialog
 
-    var startDate : String = ""
-    var endDate : String = ""
+    var startDate : String = "2019-04-01"
+    var endDate : String = "2019-04-08"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -76,45 +74,59 @@ class MainActivity : AppCompatActivity(), OnChartValueSelectedListener {
         //TODO("not implemented")
     }
 
+    //TODO: clean this code!
+    private fun setCalendars(){
+        val c = Calendar.getInstance()
+        val year = c.get(Calendar.YEAR)
+        val month = c.get(Calendar.MONTH)
+        val day = c.get(Calendar.DAY_OF_MONTH)
+
+
+        val minCalendar = Calendar.getInstance()
+        minCalendar.set(Calendar.YEAR, 1999)
+        minCalendar.set(Calendar.MONTH, 1)
+        minCalendar.set(Calendar.DAY_OF_YEAR, 1)
+
+        val maxDate = c.timeInMillis
+        val minDate = minCalendar.timeInMillis
+
+
+        startCalendar = DatePickerDialog(this, DatePickerDialog.OnDateSetListener { _, year, monthOfYear, dayOfMonth ->
+            // Display Selected date in Toast
+            Toast.makeText(this, """$dayOfMonth - ${monthOfYear + 1} - $year""", Toast.LENGTH_LONG).show()
+            startDate = "$year-${monthOfYear + 1}-$dayOfMonth"
+            startDateEditText.setText(startDate)
+
+        }, year, month, day)
+        startCalendar.datePicker.setMaxMinDate(minDate, maxDate)
+
+        endCalendar = DatePickerDialog(this, DatePickerDialog.OnDateSetListener { _, year, monthOfYear, dayOfMonth ->
+            // Display Selected date in Toast
+            Toast.makeText(this, """$dayOfMonth - ${monthOfYear + 1} - $year""", Toast.LENGTH_LONG).show()
+            endDate = "$year-${monthOfYear + 1}-$dayOfMonth"
+            endDateEditText.setText(endDate)
+
+        }, year, month, day)
+        endCalendar.datePicker.setMaxMinDate(minDate, maxDate)
+    }
+
     private fun setListeners() {
         startDateEditText.setReadOnly(true, InputType.TYPE_NULL)
         endDateEditText.setReadOnly(true, InputType.TYPE_NULL)
 
+        setCalendars()
+
         startDateEditText.setOnClickListener {
-            Toast.makeText(ctx, "start!", Toast.LENGTH_LONG).show()
-            val c = Calendar.getInstance()
-            val year = c.get(Calendar.YEAR)
-            val month = c.get(Calendar.MONTH)
-            val day = c.get(Calendar.DAY_OF_MONTH)
-
-
-            val dpd = DatePickerDialog(this, DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
-                // Display Selected date in Toast
-                Toast.makeText(this, """$dayOfMonth - ${monthOfYear + 1} - $year""", Toast.LENGTH_LONG).show()
-
-            }, year, month, day)
-            dpd.show()
+            startCalendar.show()
         }
 
         endDateEditText.setOnClickListener {
-            Toast.makeText(ctx, "end!", Toast.LENGTH_LONG).show()
-            val c = Calendar.getInstance()
-            val year = c.get(Calendar.YEAR)
-            val month = c.get(Calendar.MONTH)
-            val day = c.get(Calendar.DAY_OF_MONTH)
-
-
-            val dpd = DatePickerDialog(this, DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
-                // Display Selected date in Toast
-                Toast.makeText(this, """$dayOfMonth - ${monthOfYear + 1} - $year""", Toast.LENGTH_LONG).show()
-
-            }, year, month, day)
-            dpd.show()
+            endCalendar.show()
         }
     }
 
     private fun getHistoric() {
-        getRates("2018-02-02", "2018-03-03", "EUR", "USD", this, object : Callback<ResponseBody> {
+        getRates(startDate, endDate, "EUR", "USD", this, object : Callback<ResponseBody> {
             override fun onFailure(call: Call<ResponseBody>?, t: Throwable?) {
                 //
                 Log.d("TAG", "FAIL")
