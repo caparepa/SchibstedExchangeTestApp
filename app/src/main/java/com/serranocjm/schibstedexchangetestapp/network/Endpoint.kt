@@ -9,7 +9,6 @@ import retrofit2.http.Query
 
 interface Endpoint {
 
-    //TODO: Regular Retrofit
     @GET("history")
     @Headers("Content-Type:application/json", "Accept:application/json")
     fun getHistoricRates(

@@ -1,6 +1,6 @@
 package com.serranocjm.schibstedexchangetestapp.network
 
-import com.serranocjm.schibstedexchangetestapp.extensions.processRateResponse
+import com.serranocjm.schibstedexchangetestapp.extensions.*
 import com.serranocjm.schibstedexchangetestapp.model.HistoryExchangeRate
 import okhttp3.ResponseBody
 import org.json.JSONObject
