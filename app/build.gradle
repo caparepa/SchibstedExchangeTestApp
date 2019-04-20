@@ -30,9 +30,13 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 
 
-    //
+    //Chart
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
-    
+
+    //Datetime range picker
+    implementation 'com.github.subirZ:DateRangePicker:1.0'
+    implementation 'com.android.support:design:28.0.0'
+
     //
     implementation 'com.squareup.retrofit2:retrofit:2.4.0'
     implementation "com.squareup.retrofit2:adapter-rxjava2:2.4.0"
