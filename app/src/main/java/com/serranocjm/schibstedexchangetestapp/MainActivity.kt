@@ -1,12 +1,16 @@
 package com.serranocjm.schibstedexchangetestapp
 
+import android.app.DatePickerDialog
 import android.content.Context
 import android.graphics.Color
 import android.graphics.DashPathEffect
+import android.icu.util.Calendar
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.text.InputType
 import android.util.Log
 import android.widget.Button
+import android.widget.EditText
 import android.widget.Toast
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.*
@@ -19,6 +23,7 @@ import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.serranocjm.schibstedexchangetestapp.custom.MyMarkerView
+import com.serranocjm.schibstedexchangetestapp.extensions.setReadOnly
 import com.serranocjm.schibstedexchangetestapp.model.ExchangeRate
 import com.serranocjm.schibstedexchangetestapp.model.HistoryExchangeRate
 import com.serranocjm.schibstedexchangetestapp.network.HistoricRatesHandler.getRates
@@ -38,6 +43,13 @@ class MainActivity : AppCompatActivity(), OnChartValueSelectedListener {
     lateinit var queryButton : Button
     lateinit var chart: LineChart
     lateinit var dataSet: LineDataSet
+    lateinit var startDateEditText: EditText
+    lateinit var endDateEditText: EditText
+    lateinit var startCalendar : DatePickerDialog
+    lateinit var endCalendar : DatePickerDialog
+
+    var startDate : String = ""
+    var endDate : String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,8 +57,11 @@ class MainActivity : AppCompatActivity(), OnChartValueSelectedListener {
         ctx = this
         queryButton = bt_query_button
         chart = lc_rate_chart
-        initChart()
+        startDateEditText = et_start_date
+        endDateEditText = et_end_date
 
+        setListeners()
+        initChart()
 
         queryButton.setOnClickListener {
             getHistoric()
@@ -54,11 +69,48 @@ class MainActivity : AppCompatActivity(), OnChartValueSelectedListener {
     }
 
     override fun onNothingSelected() {
-        //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        //TODO("not implemented")
     }
 
     override fun onValueSelected(e: Entry?, h: Highlight?) {
-        //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        //TODO("not implemented")
+    }
+
+    private fun setListeners() {
+        startDateEditText.setReadOnly(true, InputType.TYPE_NULL)
+        endDateEditText.setReadOnly(true, InputType.TYPE_NULL)
+
+        startDateEditText.setOnClickListener {
+            Toast.makeText(ctx, "start!", Toast.LENGTH_LONG).show()
+            val c = Calendar.getInstance()
+            val year = c.get(Calendar.YEAR)
+            val month = c.get(Calendar.MONTH)
+            val day = c.get(Calendar.DAY_OF_MONTH)
+
+
+            val dpd = DatePickerDialog(this, DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
+                // Display Selected date in Toast
+                Toast.makeText(this, """$dayOfMonth - ${monthOfYear + 1} - $year""", Toast.LENGTH_LONG).show()
+
+            }, year, month, day)
+            dpd.show()
+        }
+
+        endDateEditText.setOnClickListener {
+            Toast.makeText(ctx, "end!", Toast.LENGTH_LONG).show()
+            val c = Calendar.getInstance()
+            val year = c.get(Calendar.YEAR)
+            val month = c.get(Calendar.MONTH)
+            val day = c.get(Calendar.DAY_OF_MONTH)
+
+
+            val dpd = DatePickerDialog(this, DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
+                // Display Selected date in Toast
+                Toast.makeText(this, """$dayOfMonth - ${monthOfYear + 1} - $year""", Toast.LENGTH_LONG).show()
+
+            }, year, month, day)
+            dpd.show()
+        }
     }
 
     private fun getHistoric() {

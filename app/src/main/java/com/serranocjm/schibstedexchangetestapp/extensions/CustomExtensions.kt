@@ -1,5 +1,7 @@
 package com.serranocjm.schibstedexchangetestapp.extensions
 
+import android.text.InputType
+import android.widget.EditText
 import com.serranocjm.schibstedexchangetestapp.model.ExchangeRate
 import com.serranocjm.schibstedexchangetestapp.model.HistoryExchangeRate
 import org.json.JSONObject
@@ -41,3 +43,11 @@ fun JSONObject.processRateResponse() : HistoryExchangeRate {
 
 //try-catch wrapper extension
 inline fun <T> justTry(block: () -> T) = try { block() } catch (e: Throwable) {}
+
+
+//read-only edittext
+fun EditText.setReadOnly(value: Boolean, inputType: Int = InputType.TYPE_NULL) {
+    isFocusable = !value
+    isFocusableInTouchMode = !value
+    this.inputType = inputType
+}
