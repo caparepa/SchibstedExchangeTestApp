@@ -18,6 +18,7 @@
             android:layout_height="wrap_content"
             android:text="HISTORIC EUR-USD EXCHANGE RATE"
             android:textSize="22sp"
+            android:textAlignment="center"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="4dp"
             android:layout_marginStart="16dp"
