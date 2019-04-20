@@ -53,17 +53,12 @@ class MainActivity : AppCompatActivity(), OnChartValueSelectedListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         ctx = this
-        queryButton = bt_query_button
-        chart = lc_rate_chart
-        startDateEditText = et_start_date
-        endDateEditText = et_end_date
 
+        initElements()
         setListeners()
         initChart()
 
-        queryButton.setOnClickListener {
-            getHistoric()
-        }
+
     }
 
     override fun onNothingSelected() {
@@ -74,39 +69,58 @@ class MainActivity : AppCompatActivity(), OnChartValueSelectedListener {
         //TODO("not implemented")
     }
 
+    private fun initElements() {
+        queryButton = bt_query_button
+        chart = lc_rate_chart
+        startDateEditText = et_start_date
+        endDateEditText = et_end_date
+        startDateEditText.setText(startDate)
+        endDateEditText.setText(endDate)
+    }
+
     //TODO: clean this code!
     private fun setCalendars(){
+
+        //Today's calendar
         val c = Calendar.getInstance()
         val year = c.get(Calendar.YEAR)
         val month = c.get(Calendar.MONTH)
         val day = c.get(Calendar.DAY_OF_MONTH)
 
-
+        //Calendar to set EUR start date
         val minCalendar = Calendar.getInstance()
         minCalendar.set(Calendar.YEAR, 1999)
         minCalendar.set(Calendar.MONTH, 1)
         minCalendar.set(Calendar.DAY_OF_YEAR, 1)
 
+        //Min and max date values
         val maxDate = c.timeInMillis
         val minDate = minCalendar.timeInMillis
 
-
         startCalendar = DatePickerDialog(this, DatePickerDialog.OnDateSetListener { _, year, monthOfYear, dayOfMonth ->
-            // Display Selected date in Toast
-            Toast.makeText(this, """$dayOfMonth - ${monthOfYear + 1} - $year""", Toast.LENGTH_LONG).show()
-            startDate = "$year-${monthOfYear + 1}-$dayOfMonth"
-            startDateEditText.setText(startDate)
-
+            //Simple validation
+            if(startCalendar.datePicker.getTimeInMillis() > endCalendar.datePicker.getTimeInMillis()) {
+                this.toastLong("Start date cannot be higher than end date!")
+                startDate = ""
+            } else {
+                startDate = "$year-${monthOfYear + 1}-$dayOfMonth"
+                startDateEditText.setText(startDate)
+            }
         }, year, month, day)
-        startCalendar.datePicker.setMaxMinDate(minDate, maxDate)
 
         endCalendar = DatePickerDialog(this, DatePickerDialog.OnDateSetListener { _, year, monthOfYear, dayOfMonth ->
-            // Display Selected date in Toast
-            Toast.makeText(this, """$dayOfMonth - ${monthOfYear + 1} - $year""", Toast.LENGTH_LONG).show()
-            endDate = "$year-${monthOfYear + 1}-$dayOfMonth"
-            endDateEditText.setText(endDate)
-
+            //Simple validation
+            if(endCalendar.datePicker.getTimeInMillis() < startCalendar.datePicker.getTimeInMillis()) {
+                this.toastLong("End date cannot be lower than start date!")
+                endDate = ""
+            } else {
+                endDate = "$year-${monthOfYear + 1}-$dayOfMonth"
+                endDateEditText.setText(endDate)
+            }
         }, year, month, day)
+
+        //Set bot calendar min and max dates
+        startCalendar.datePicker.setMaxMinDate(minDate, maxDate)
         endCalendar.datePicker.setMaxMinDate(minDate, maxDate)
     }
 
@@ -123,23 +137,30 @@ class MainActivity : AppCompatActivity(), OnChartValueSelectedListener {
         endDateEditText.setOnClickListener {
             endCalendar.show()
         }
+
+        queryButton.setOnClickListener {
+            if(!startDate.isEmpty() && !endDate.isEmpty()) {
+                getHistoric()
+            } else {
+                this.toastLong("You have to select both start and end date!")
+            }
+        }
     }
 
     private fun getHistoric() {
         getRates(startDate, endDate, "EUR", "USD", this, object : Callback<ResponseBody> {
             override fun onFailure(call: Call<ResponseBody>?, t: Throwable?) {
                 //
-                Log.d("TAG", "FAIL")
+                Log.d("TAG", "ERROR")
             }
 
             override fun onResponse(call: Call<ResponseBody>?, response: Response<ResponseBody>?) {
-                //
-                Log.d("TAG", "SUCCESS")
                 val obj : HistoryExchangeRate? = HistoricRatesResponseHandler.processHistoricRates(response)
-                Toast.makeText(ctx, "HEY!", Toast.LENGTH_LONG).show()
                 if(obj != null) {
                     //populateView(obj)
                     setChart(obj)
+                } else {
+                    ctx.toastLong("This search had no results.")
                 }
             }
         })
@@ -203,8 +224,8 @@ class MainActivity : AppCompatActivity(), OnChartValueSelectedListener {
             yAxis.enableGridDashedLine(10f, 10f, 0f)
 
             // axis range
-            yAxis.axisMaximum = 3f
-            yAxis.axisMinimum = 0f
+            yAxis.axisMaximum = 1.8f
+            yAxis.axisMinimum = 0.5f
         }
 
         // add data
