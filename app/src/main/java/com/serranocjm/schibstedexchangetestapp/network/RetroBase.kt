@@ -5,6 +5,5 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
 
 class RetroBase (url: String){
-    val retrofit = Retrofit.Builder().baseUrl(url).addConverterFactory(ScalarsConverterFactory.create()).build()
-    val retrofitGson = Retrofit.Builder().baseUrl(url).addConverterFactory(GsonConverterFactory.create()).build()
+    val retrofit : Retrofit = Retrofit.Builder().baseUrl(url).addConverterFactory(GsonConverterFactory.create()).build()
 }
