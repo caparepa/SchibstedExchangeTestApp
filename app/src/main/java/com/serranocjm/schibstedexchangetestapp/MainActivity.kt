@@ -26,7 +26,9 @@ import com.serranocjm.schibstedexchangetestapp.custom.MyMarkerView
 import com.serranocjm.schibstedexchangetestapp.extensions.*
 import com.serranocjm.schibstedexchangetestapp.model.ExchangeRate
 import com.serranocjm.schibstedexchangetestapp.model.HistoryExchangeRate
+import com.serranocjm.schibstedexchangetestapp.model.HistoryExchangeRatePrime
 import com.serranocjm.schibstedexchangetestapp.network.HistoricRatesHandler.getRates
+import com.serranocjm.schibstedexchangetestapp.network.HistoricRatesHandler.getRatesPrime
 import com.serranocjm.schibstedexchangetestapp.network.HistoricRatesResponseHandler
 import kotlinx.android.synthetic.main.activity_main.*
 import okhttp3.ResponseBody
@@ -164,6 +166,27 @@ class MainActivity : AppCompatActivity(), OnChartValueSelectedListener {
                 }
             }
         })
+
+        getRatesPrime(startDate, endDate, "EUR", "USD", this, object : Callback<HistoryExchangeRatePrime> {
+            override fun onFailure(call: Call<HistoryExchangeRatePrime>?, t: Throwable?) {
+                //
+                Log.d("TAG", "ERROR")
+            }
+
+            override fun onResponse(call: Call<HistoryExchangeRatePrime>?, response: Response<HistoryExchangeRatePrime>?) {
+
+                val testResponse = response //IT WORKS, DAMMIT! :D
+
+                /*val obj : HistoryExchangeRate? = HistoricRatesResponseHandler.processHistoricRates(response)
+                if(obj != null) {
+                    //populateView(obj)
+                    setChart(obj)
+                } else {
+                    ctx.toastLong("This search had no results.")
+                }*/
+            }
+        })
+
     }
 
     private fun initChart() {
