@@ -175,15 +175,34 @@ class MainActivity : AppCompatActivity(), OnChartValueSelectedListener {
 
             override fun onResponse(call: Call<HistoryExchangeRatePrime>?, response: Response<HistoryExchangeRatePrime>?) {
 
-                val testResponse = response //IT WORKS, DAMMIT! :D
+                if(response?.body() != null) {
+                    val testResponse : HistoryExchangeRatePrime? = response.body() //IT WORKS, DAMMIT! :D
+                    var rateList = testResponse!!.rateList
 
-                /*val obj : HistoryExchangeRate? = HistoricRatesResponseHandler.processHistoricRates(response)
-                if(obj != null) {
-                    //populateView(obj)
-                    setChart(obj)
+                    val set1 : LineDataSet
+                    val values = ArrayList<Entry>()
+                    val dates = ArrayList<String>()
+                    var i=0
+                    rateList.forEach{ (date, rateValue) ->
+                        values.add(Entry(i.toFloat(), rateValue.usd!!.toFloat()))
+                        dates.add(date)
+                        i++
+                    }
+
+                    Log.d("TAG", "HELLO!")
+
+                    /*val obj : HistoryExchangeRate? = HistoricRatesResponseHandler.processHistoricRates(response)
+                    if(obj != null) {
+                        //populateView(obj)
+                        setChart(obj)
+                    } else {
+                        ctx.toastLong("This search had no results.")
+                    }*/
                 } else {
-                    ctx.toastLong("This search had no results.")
-                }*/
+                    ctx.toastLong("NO DATA!")
+                }
+
+
             }
         })
 
