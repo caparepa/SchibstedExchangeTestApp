@@ -23,7 +23,7 @@ import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.serranocjm.schibstedexchangetestapp.custom.MyMarkerView
 import com.serranocjm.schibstedexchangetestapp.extensions.*
-import com.serranocjm.schibstedexchangetestapp.model.HistoryExchangeRatePrime
+import com.serranocjm.schibstedexchangetestapp.model.HistoryExchangeRate
 import com.serranocjm.schibstedexchangetestapp.model.Rate
 import com.serranocjm.schibstedexchangetestapp.network.HistoricRatesHandler.getRates
 import kotlinx.android.synthetic.main.activity_main.*
@@ -146,16 +146,16 @@ class MainActivity : AppCompatActivity(), OnChartValueSelectedListener {
 
     private fun getHistoric() {
 
-        getRates(startDate, endDate, "EUR", "USD", this, object : Callback<HistoryExchangeRatePrime> {
-            override fun onFailure(call: Call<HistoryExchangeRatePrime>?, t: Throwable?) {
+        getRates(startDate, endDate, "EUR", "USD", this, object : Callback<HistoryExchangeRate> {
+            override fun onFailure(call: Call<HistoryExchangeRate>?, t: Throwable?) {
                 //
                 Log.d("TAG", "ERROR")
             }
 
-            override fun onResponse(call: Call<HistoryExchangeRatePrime>?, response: Response<HistoryExchangeRatePrime>?) {
+            override fun onResponse(call: Call<HistoryExchangeRate>?, response: Response<HistoryExchangeRate>?) {
 
                 if(response?.body() != null) {
-                    val obj : HistoryExchangeRatePrime? = response.body() //IT WORKS, DAMMIT! :D
+                    val obj : HistoryExchangeRate? = response.body() //IT WORKS, DAMMIT! :D
                     setChart(obj!!)
                 } else {
                     ctx.toastLong("NO DATA!")
@@ -201,7 +201,7 @@ class MainActivity : AppCompatActivity(), OnChartValueSelectedListener {
     }
 
     //set the chart and other stuff
-    private fun setChart(obj: HistoryExchangeRatePrime) {
+    private fun setChart(obj: HistoryExchangeRate) {
 
         val xAxis: XAxis
         run {
