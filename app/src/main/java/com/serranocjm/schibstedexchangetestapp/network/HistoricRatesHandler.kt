@@ -1,12 +1,15 @@
 package com.serranocjm.schibstedexchangetestapp.network
 
 import android.content.Context
+import com.serranocjm.schibstedexchangetestapp.extensions.justTry
+import com.serranocjm.schibstedexchangetestapp.extensions.toastLong
 import com.serranocjm.schibstedexchangetestapp.model.HistoryExchangeRate
+import kotlinx.coroutines.*
 import retrofit2.Callback
 
 object HistoricRatesHandler {
 
-    private val retroBase =
+    val retroBase =
         RetroBase(Url.BASE_URL)
 
     fun getRates(
@@ -18,7 +21,7 @@ object HistoricRatesHandler {
         callBack: Callback<HistoryExchangeRate>
     ) {
         val service = retroBase.retrofit.create(Endpoint::class.java)
-        service.getHistoricRatesPrime(startDate, endDate, base, target).enqueue(callBack)
+        service.getHistoricRates(startDate, endDate, base, target).enqueue(callBack)
     }
 
 }

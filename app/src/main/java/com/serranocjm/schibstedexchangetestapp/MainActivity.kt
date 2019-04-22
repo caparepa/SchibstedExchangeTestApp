@@ -25,8 +25,14 @@ import com.serranocjm.schibstedexchangetestapp.custom.MyMarkerView
 import com.serranocjm.schibstedexchangetestapp.extensions.*
 import com.serranocjm.schibstedexchangetestapp.model.HistoryExchangeRate
 import com.serranocjm.schibstedexchangetestapp.model.Rate
+import com.serranocjm.schibstedexchangetestapp.network.Endpoint
+import com.serranocjm.schibstedexchangetestapp.network.HistoricRatesHandler
 import com.serranocjm.schibstedexchangetestapp.network.HistoricRatesHandler.getRates
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -146,7 +152,7 @@ class MainActivity : AppCompatActivity(), OnChartValueSelectedListener {
 
     private fun getHistoric() {
 
-        getRates(startDate, endDate, "EUR", "USD", this, object : Callback<HistoryExchangeRate> {
+        /*getRates(startDate, endDate, "EUR", "USD", this, object : Callback<HistoryExchangeRate> {
             override fun onFailure(call: Call<HistoryExchangeRate>?, t: Throwable?) {
                 //
                 Log.d("TAG", "ERROR")
@@ -161,7 +167,21 @@ class MainActivity : AppCompatActivity(), OnChartValueSelectedListener {
                     ctx.toastLong("NO DATA!")
                 }
             }
-        })
+        })*/
+
+        val service = HistoricRatesHandler.retroBase.retrofit.create(Endpoint::class.java)
+        CoroutineScope(Dispatchers.IO).launch {
+            val request = service.getHistoricRatesCoroutine(startDate, endDate, "EUR", "USD ")
+            justTry {
+                val response= request.await()
+                if(response.isSuccessful){
+                    val obj : HistoryExchangeRate? = response.body() //IT WORKS, DAMMIT! :D
+                    setChart(obj!!)
+                } else {
+                    ctx.toastLong("ERROR")
+                }
+            }
+        }
     }
 
     //initialize chart styles and stuff
