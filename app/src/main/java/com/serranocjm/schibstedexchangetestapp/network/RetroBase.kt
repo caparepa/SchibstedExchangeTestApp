@@ -9,7 +9,8 @@ class RetroBase (url: String){
     val retrofit : Retrofit = Retrofit.Builder().baseUrl(url)
         .addConverterFactory(GsonConverterFactory.create()).build()
 
-    val retrofitCoroutine : Retrofit = Retrofit.Builder().baseUrl(url)
+    val retrofitCoroutine : Retrofit = Retrofit.Builder()
+        .baseUrl(url)
         .addConverterFactory(GsonConverterFactory.create())
         .addCallAdapterFactory(CoroutineCallAdapterFactory())
         .build()

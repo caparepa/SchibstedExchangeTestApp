@@ -29,10 +29,7 @@ import com.serranocjm.schibstedexchangetestapp.network.Endpoint
 import com.serranocjm.schibstedexchangetestapp.network.HistoricRatesHandler
 import com.serranocjm.schibstedexchangetestapp.network.HistoricRatesHandler.getRates
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -169,16 +166,18 @@ class MainActivity : AppCompatActivity(), OnChartValueSelectedListener {
             }
         })*/
 
-        val service = HistoricRatesHandler.retroBase.retrofit.create(Endpoint::class.java)
+        val service = HistoricRatesHandler.retroBase.retrofitCoroutine.create(Endpoint::class.java)
         CoroutineScope(Dispatchers.IO).launch {
             val request = service.getHistoricRatesCoroutine(startDate, endDate, "EUR", "USD ")
             justTry {
                 val response= request.await()
-                if(response.isSuccessful){
-                    val obj : HistoryExchangeRate? = response.body() //IT WORKS, DAMMIT! :D
-                    setChart(obj!!)
-                } else {
-                    ctx.toastLong("ERROR")
+                withContext(Dispatchers.Main) {
+                    if(response.isSuccessful){
+                        val obj : HistoryExchangeRate? = response.body() //IT WORKS, DAMMIT! :D
+                        setChart(obj!!)
+                    } else {
+                        ctx.toastLong("ERROR")
+                    }
                 }
             }
         }
