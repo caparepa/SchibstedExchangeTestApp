@@ -11,7 +11,6 @@ import android.text.InputType
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
-import android.widget.Toast
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.*
 import com.github.mikephil.charting.data.Entry
@@ -24,16 +23,14 @@ import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.serranocjm.schibstedexchangetestapp.custom.MyMarkerView
 import com.serranocjm.schibstedexchangetestapp.extensions.*
-import com.serranocjm.schibstedexchangetestapp.model.ExchangeRate
 import com.serranocjm.schibstedexchangetestapp.model.HistoryExchangeRate
+import com.serranocjm.schibstedexchangetestapp.model.Rate
 import com.serranocjm.schibstedexchangetestapp.network.HistoricRatesHandler.getRates
-import com.serranocjm.schibstedexchangetestapp.network.HistoricRatesResponseHandler
 import kotlinx.android.synthetic.main.activity_main.*
-import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.util.ArrayList
+import java.util.*
 
 class MainActivity : AppCompatActivity(), OnChartValueSelectedListener {
 
@@ -148,24 +145,26 @@ class MainActivity : AppCompatActivity(), OnChartValueSelectedListener {
     }
 
     private fun getHistoric() {
-        getRates(startDate, endDate, "EUR", "USD", this, object : Callback<ResponseBody> {
-            override fun onFailure(call: Call<ResponseBody>?, t: Throwable?) {
+
+        getRates(startDate, endDate, "EUR", "USD", this, object : Callback<HistoryExchangeRate> {
+            override fun onFailure(call: Call<HistoryExchangeRate>?, t: Throwable?) {
                 //
                 Log.d("TAG", "ERROR")
             }
 
-            override fun onResponse(call: Call<ResponseBody>?, response: Response<ResponseBody>?) {
-                val obj : HistoryExchangeRate? = HistoricRatesResponseHandler.processHistoricRates(response)
-                if(obj != null) {
-                    //populateView(obj)
-                    setChart(obj)
+            override fun onResponse(call: Call<HistoryExchangeRate>?, response: Response<HistoryExchangeRate>?) {
+
+                if(response?.body() != null) {
+                    val obj : HistoryExchangeRate? = response.body() //IT WORKS, DAMMIT! :D
+                    setChart(obj!!)
                 } else {
-                    ctx.toastLong("This search had no results.")
+                    ctx.toastLong("NO DATA!")
                 }
             }
         })
     }
 
+    //initialize chart styles and stuff
     private fun initChart() {
         run {
             // // Chart Style // //
@@ -201,6 +200,7 @@ class MainActivity : AppCompatActivity(), OnChartValueSelectedListener {
         }
     }
 
+    //set the chart and other stuff
     private fun setChart(obj: HistoryExchangeRate) {
 
         val xAxis: XAxis
@@ -243,74 +243,67 @@ class MainActivity : AppCompatActivity(), OnChartValueSelectedListener {
         l.form = Legend.LegendForm.LINE
     }
 
-    private fun populateView(obj : HistoryExchangeRate) {
+    //populate the chart (well duh!)
+    private fun populateChart(rateList : TreeMap<String, Rate>) {
 
-        if(obj.rateList.isNotEmpty()){
-            populateChart(obj.rateList)
-        }
-
-    }
-
-    private fun populateChart(rateList: List<ExchangeRate>) {
-
-        val set1 : LineDataSet
         val values = ArrayList<Entry>()
         val dates = ArrayList<String>()
+        var i=0
 
-        //set entry list
-        for(i in rateList.indices){
-            values.add(Entry(i.toFloat(),rateList[i].rate.toFloat()))
-            dates.add(rateList[i].date)
+        //get rates and dates from map
+        rateList.forEach{ (date, rateValue) ->
+            values.add(Entry(i.toFloat(), rateValue.usd!!.toFloat()))
+            dates.add(date)
+            i++
         }
 
-
         if (chart.data != null && chart.data.dataSetCount > 0) {
-            set1 = chart.data.getDataSetByIndex(0) as LineDataSet
-            set1.values = values
-            set1.notifyDataSetChanged()
+            dataSet = chart.data.getDataSetByIndex(0) as LineDataSet
+            dataSet.values = values
+            dataSet.notifyDataSetChanged()
             chart.data.notifyDataChanged()
             chart.notifyDataSetChanged()
         } else {
             // create a dataset and give it a type
-            set1 = LineDataSet(values, "DataSet 1")
+            dataSet = LineDataSet(values, "DataSet 1")
 
-            set1.setDrawIcons(false)
+            dataSet.setDrawIcons(false)
 
             // draw dashed line
-            set1.enableDashedLine(10f, 5f, 0f)
+            dataSet.enableDashedLine(10f, 5f, 0f)
 
             // black lines and points
-            set1.color = Color.BLACK
-            set1.setCircleColor(Color.BLACK)
+            dataSet.color = Color.BLACK
+            dataSet.setCircleColor(Color.BLACK)
 
             // line thickness and point size
-            set1.lineWidth = 1f
-            set1.circleRadius = 3f
+            dataSet.lineWidth = 1f
+            dataSet.circleRadius = 3f
 
             // draw points as solid circles
-            set1.setDrawCircleHole(false)
+            dataSet.setDrawCircleHole(false)
 
             // customize legend entry
-            set1.formLineWidth = 1f
-            set1.formLineDashEffect = DashPathEffect(floatArrayOf(10f, 5f), 0f)
-            set1.formSize = 15f
+            dataSet.formLineWidth = 1f
+            dataSet.formLineDashEffect = DashPathEffect(floatArrayOf(10f, 5f), 0f)
+            dataSet.formSize = 15f
 
             // text size of values
-            set1.valueTextSize = 9f
+            dataSet.valueTextSize = 9f
 
             // draw selection line as dashed
-            set1.enableDashedHighlightLine(10f, 5f, 0f)
+            dataSet.enableDashedHighlightLine(10f, 5f, 0f)
 
             // set the filled area
-            set1.setDrawFilled(true)
-            set1.fillFormatter = IFillFormatter { dataSet, dataProvider -> chart.axisLeft.axisMinimum }
+            dataSet.setDrawFilled(true)
+            dataSet.fillFormatter = IFillFormatter { dataSet, dataProvider -> chart.axisLeft.axisMinimum }
 
             // set color of filled area
 
-                set1.fillColor = Color.BLACK
+            dataSet.fillColor = Color.BLACK
 
             val dataSets = ArrayList<ILineDataSet>()
-            dataSets.add(set1) // add the data sets
+            dataSets.add(dataSet) // add the data sets
 
             // create a data object with the data sets
             val data = LineData(dataSets)
@@ -320,6 +313,6 @@ class MainActivity : AppCompatActivity(), OnChartValueSelectedListener {
 
             chart.data = data
         }
-
     }
+
 }

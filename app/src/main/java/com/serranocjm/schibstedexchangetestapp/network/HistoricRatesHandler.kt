@@ -1,12 +1,12 @@
 package com.serranocjm.schibstedexchangetestapp.network
 
 import android.content.Context
-import okhttp3.ResponseBody
+import com.serranocjm.schibstedexchangetestapp.model.HistoryExchangeRate
 import retrofit2.Callback
 
 object HistoricRatesHandler {
 
-    val retroBase =
+    private val retroBase =
         RetroBase(Url.BASE_URL)
 
     fun getRates(
@@ -15,10 +15,10 @@ object HistoricRatesHandler {
         base: String,
         target: String,
         ctx: Context,
-        callBack: Callback<ResponseBody>
+        callBack: Callback<HistoryExchangeRate>
     ) {
-        val serv = retroBase.retrofit.create(Endpoint::class.java)
-        serv.getHistoricRates(startDate, endDate, base, target).enqueue(callBack)
+        val service = retroBase.retrofit.create(Endpoint::class.java)
+        service.getHistoricRatesPrime(startDate, endDate, base, target).enqueue(callBack)
     }
 
 }
