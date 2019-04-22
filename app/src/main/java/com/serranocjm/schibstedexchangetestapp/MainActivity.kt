@@ -144,6 +144,7 @@ class MainActivity : AppCompatActivity(), OnChartValueSelectedListener {
 
     private fun getHistoric() {
 
+        //TODO: find out how to send this to another package...
         val service = HistoricRatesHandler.retroBase.retrofitCoroutine.create(Endpoint::class.java)
         CoroutineScope(Dispatchers.IO).launch {
             val request = service.getHistoricRatesCoroutine(startDate, endDate, "EUR", "USD")
@@ -151,7 +152,7 @@ class MainActivity : AppCompatActivity(), OnChartValueSelectedListener {
                 val response= request.await()
                 withContext(Dispatchers.Main) {
                     if(response.isSuccessful){
-                        val obj : HistoryExchangeRate? = response.body() //IT WORKS, DAMMIT! :D
+                        val obj : HistoryExchangeRate? = response.body()
                         setChart(obj!!)
                     } else {
                         ctx.toastLong("ERROR")
