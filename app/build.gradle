@@ -48,4 +48,7 @@ dependencies {
 
     //coroutines
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.0.1'
+
+    //koin - dependency injection
+    implementation "org.koin:koin-android:$koin_version"
 }
