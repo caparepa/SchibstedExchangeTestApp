@@ -8,7 +8,6 @@ import android.icu.util.Calendar
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.text.InputType
-import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import com.github.mikephil.charting.charts.LineChart
@@ -27,12 +26,8 @@ import com.serranocjm.schibstedexchangetestapp.model.HistoryExchangeRate
 import com.serranocjm.schibstedexchangetestapp.model.Rate
 import com.serranocjm.schibstedexchangetestapp.network.Endpoint
 import com.serranocjm.schibstedexchangetestapp.network.HistoricRatesHandler
-import com.serranocjm.schibstedexchangetestapp.network.HistoricRatesHandler.getRates
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.*
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import java.util.*
 
 class MainActivity : AppCompatActivity(), OnChartValueSelectedListener {
@@ -149,26 +144,9 @@ class MainActivity : AppCompatActivity(), OnChartValueSelectedListener {
 
     private fun getHistoric() {
 
-        /*getRates(startDate, endDate, "EUR", "USD", this, object : Callback<HistoryExchangeRate> {
-            override fun onFailure(call: Call<HistoryExchangeRate>?, t: Throwable?) {
-                //
-                Log.d("TAG", "ERROR")
-            }
-
-            override fun onResponse(call: Call<HistoryExchangeRate>?, response: Response<HistoryExchangeRate>?) {
-
-                if(response?.body() != null) {
-                    val obj : HistoryExchangeRate? = response.body() //IT WORKS, DAMMIT! :D
-                    setChart(obj!!)
-                } else {
-                    ctx.toastLong("NO DATA!")
-                }
-            }
-        })*/
-
         val service = HistoricRatesHandler.retroBase.retrofitCoroutine.create(Endpoint::class.java)
         CoroutineScope(Dispatchers.IO).launch {
-            val request = service.getHistoricRatesCoroutine(startDate, endDate, "EUR", "USD ")
+            val request = service.getHistoricRatesCoroutine(startDate, endDate, "EUR", "USD")
             justTry {
                 val response= request.await()
                 withContext(Dispatchers.Main) {
